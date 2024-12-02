@@ -8,7 +8,14 @@ export const getCoinsData = async (): Promise<LatestListings[] | undefined> => {
       {
         headers: {
           'X-CMC_PRO_API_KEY': process.env.CMC_KEY || '',
+          // Below headers needed as mentioned in CMC docs
+          // https://coinmarketcap.com/api/documentation/v1/#section/Standards-and-Conventions
+          Accept: 'application/json',
+          'Accept-Encoding': 'deflate, gzip',
         },
+        // Uncomment below to revalidate every 100s
+        // https://nextjs.org/docs/app/api-reference/functions/fetch
+        next: { revalidate: 100 },
       }
     ).then((res) => res.json());
 
