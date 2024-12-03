@@ -1,10 +1,11 @@
-import { API_HOST } from './constants';
+import { headers } from 'next/headers';
+import { CMC_API_HOST } from './constants';
 import { CoinDetails, LatestListings } from './types';
 
 export const getCoinsData = async (): Promise<LatestListings[] | undefined> => {
   try {
     const { data } = await fetch(
-      `${API_HOST}/v1/cryptocurrency/listings/latest?limit=10`,
+      `${CMC_API_HOST}/v1/cryptocurrency/listings/latest?limit=10`,
       {
         headers: {
           'X-CMC_PRO_API_KEY': process.env.CMC_KEY || '',
@@ -30,10 +31,12 @@ export const getCoinsLogo = async (
 ): Promise<CoinDetails | undefined> => {
   try {
     const { data } = await fetch(
-      `${API_HOST}/v2/cryptocurrency/info?id=${id.join(',')}`,
+      `${CMC_API_HOST}/v2/cryptocurrency/info?id=${id.join(',')}`,
       {
         headers: {
           'X-CMC_PRO_API_KEY': process.env.CMC_KEY || '',
+          Accept: 'application/json',
+          'Accept-Encoding': 'deflate, gzip',
         },
       }
     ).then((res) => res.json());
@@ -41,5 +44,23 @@ export const getCoinsLogo = async (
     return data;
   } catch (e) {
     console.error(e);
+  }
+};
+
+export const getCryptoNews = async (): Promise<any[] | undefined> => {
+  try {
+    const { results } = await fetch(
+      'https://newsdata.io/api/1/news?q=crypto&country=us',
+      {
+        headers: {
+          'X-ACCESS-KEY': process.env.NEWS_DATA_KEY || '',
+          Accept: 'application/json',
+          'Accept-Encoding': 'deflate, gzip',
+        },
+      }
+    ).then((res) => res.json());
+    return results;
+  } catch (err) {
+    console.error(err);
   }
 };
