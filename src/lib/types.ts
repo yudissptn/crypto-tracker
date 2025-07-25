@@ -12,7 +12,7 @@ export type LatestListings = {
 };
 
 export type CoinDetails = {
-  [id: string]: {
+  [key: string]: {
     logo: string;
   };
 };
@@ -64,4 +64,26 @@ export type LatestCrypto = {
       percent_change_24h: number;
     };
   };
+};
+
+export type PriceChartData = {
+  timestamp: string;
+  price: number;
+};
+
+export type HistoricalData = {
+  quotes: {
+    timestamp: string;
+    quote: {
+      USD: {
+        open: number;
+        high: number;
+        low: number;
+        close: number;
+        volume: number;
+        market_cap: number;
+        timestamp: string;
+      };
+    };
+  }[];
 };

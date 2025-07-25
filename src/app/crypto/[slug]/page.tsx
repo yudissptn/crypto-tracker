@@ -1,8 +1,9 @@
-import { getCoinDataBySlug, getCoinsLogo } from "@/lib/api";
-import { LatestCrypto, LatestListings } from "@/lib/types";
+import { getCoinDataBySlug, getCoinsLogo, getHistoricalData } from "@/lib/api";
+import { LatestCrypto, PriceChartData } from "@/lib/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import Link from "next/link";
+import PriceChart from "@/components/ui/price-chart";
 
 export default async function Page({
   params,
@@ -11,9 +12,6 @@ export default async function Page({
 }) {
   const slug = (await params).slug;
   const coinData: LatestCrypto | undefined = await getCoinDataBySlug(slug);
-
-  console.log("Coin data for slug:", slug, coinData);
-  console.log("Coin data for slug quote:", slug, coinData?.quote);
 
   if (!coinData) {
     return (
@@ -27,6 +25,13 @@ export default async function Page({
       </div>
     );
   }
+
+  const historicalData = await getHistoricalData(coinData.id);
+  const chartData: PriceChartData[] =
+    historicalData?.quotes.map((quote: any) => ({
+      timestamp: quote.timestamp,
+      price: quote.quote.USD.close,
+    })) || [];
 
   const logoData = await getCoinsLogo([coinData.id]);
   const price = coinData.quote.USD.price;
@@ -71,8 +76,7 @@ export default async function Page({
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Current Price:</span>
                   <span className="font-medium">
-                    $
-                    {price.toLocaleString(undefined, {
+                    $                    {price.toLocaleString(undefined, {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
@@ -82,7 +86,9 @@ export default async function Page({
                   <span className="text-muted-foreground">24h Change:</span>
                   <span
                     className={`font-medium ${
-                      percentChange24h >= 0 ? "text-green-500" : "text-red-500"
+                      percentChange24h >= 0
+                        ? "text-green-500"
+                        : "text-red-500"
                     }`}
                   >
                     {percentChange24h >= 0 ? "+" : ""}
@@ -101,6 +107,12 @@ export default async function Page({
                 </div>
               </div>
             </div>
+          </div>
+          <div className="mt-8">
+            <h3 className="text-lg font-semibold mb-4">
+              Price Chart (Last 6 Months)
+            </h3>
+            <PriceChart data={chartData} />
           </div>
         </CardContent>
       </Card>
