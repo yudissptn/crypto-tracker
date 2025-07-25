@@ -15,7 +15,10 @@ const PriceChart = (props: { data: PriceChartData[] }) => {
   const { data } = props;
   return (
     <ResponsiveContainer width="100%" height={400}>
-      <LineChart data={data} margin={{ top: 10, right: 30, left: 20, bottom: 0 }}>
+      <LineChart
+        data={data}
+        margin={{ top: 10, right: 30, left: 20, bottom: 0 }}
+      >
         <XAxis
           dataKey="timestamp"
           tickFormatter={(tick) => {
